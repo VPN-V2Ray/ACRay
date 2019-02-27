@@ -1,6 +1,7 @@
 var proxy = "SOCKS 10.214.62.242:1080;";
 
 var domains = {
+  "reddit.com": 1,
   "pinterest.com": 1,
   "download.kolor.com": 1,
   "messenger.com": 1,
