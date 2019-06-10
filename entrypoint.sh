@@ -90,8 +90,10 @@ iptables -A FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
 # 伪装 VPN 子网流量
 iptables -t nat -A POSTROUTING -s ${VPN_NETWORK}/${VPN_NETMASK} -j MASQUERADE
 
-# 修改 PAC
-sed -i "s/my_pac_url/${PAC_URL}/g" /etc/ocserv/ocserv.conf
+# 添加 PAC
+cat >> /etc/ocserv/ocserv.conf _EOF_
+proxy-url = ${PAC_URL}
+_EOF_
 
 # Run ACRay Server
 exec nohup /usr/bin/v2ray -config=/etc/v2ray/config.json >/dev/null 2>%1 &
