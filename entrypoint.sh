@@ -91,7 +91,7 @@ iptables -A FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
 iptables -t nat -A POSTROUTING -s ${VPN_NETWORK}/${VPN_NETMASK} -j MASQUERADE
 
 # 添加 PAC
-cat >> /etc/ocserv/ocserv.conf _EOF_
+cat >> /etc/ocserv/ocserv.conf << _EOF_
 proxy-url = ${PAC_URL}
 _EOF_
 
