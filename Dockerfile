@@ -9,13 +9,15 @@ ENV PORT=443 \
     VPN_NETMASK=255.255.255.0 \
     VPN_USERNAME=opsvpn \
     VPN_PASSWORD=opsvpn \
+    CLIENT_IP=118.24.188.231 \
     V2RAY_SERVER=d.c.b.a \
     V2RAY_PORT=10011 \
     V2RAY_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx \
     V2RAY_ALTERID=64 \
     OC_GENERATE_KEY=true \
     RADIUS_SERVER=radius.motofans.club \
-    RADIUS_SHAREKEY=yoursharekey
+    RADIUS_SHAREKEY=yoursharekey \
+    PAC_URL=https://git.motofans.club/xiafan/ACRay/raw/pac/pub.pac
 
 RUN mkdir -p /etc/ocserv/certs
     

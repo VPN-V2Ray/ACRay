@@ -1,7 +1,6 @@
 #!/bin/sh
 set -xe
 
-CONFIG_FILE=/etc/ocserv/ocserv.conf
 CLIENT="${VPN_USERNAME}@${VPN_DOMAIN}"
 
 echo "$PORT"
@@ -18,13 +17,14 @@ echo "$V2RAY_ALTERID"
 echo "$OC_GENERATE_KEY"
 echo "$RADIUS_SHAREKEY"
 echo "$RADIUS_SERVER"
+echo "$CLIENT_IP"
 
 function changeConfig() {
 	local prop=$1
 	local var=$2
 	if [ -n "$var" ]; then
 		echo "[INFO] Setting $prop to $var"
-		sed -i "/$prop\s*=/ c $prop=$var" $CONFIG_FILE
+		sed -i "/$prop\s*=/ c $prop=$var" /etc/ocserv/ocserv.conf
 	fi
 }
 
@@ -50,15 +50,16 @@ fi
 # OCServ Network Settings
 sed -i -e "s@^ipv4-network =.*@ipv4-network = ${VPN_NETWORK}@" \
 	-e "s@^default-domain =.*@default-domain = ${VPN_DOMAIN}@" \
-	-e "s@^ipv4-netmask =.*@ipv4-netmask = ${VPN_NETMASK}@" $CONFIG_FILE
+	-e "s@^ipv4-netmask =.*@ipv4-netmask = ${VPN_NETMASK}@" /etc/ocserv/ocserv.conf
 #changeConfig "udp-port" "$PORT"
 changeConfig "tcp-port" "$PORT"
 
 # Config V2Ray-Client
+sed -i "s/w.x.y.z/${CLIENT_IP}/g" /etc/v2ray/config.json
 sed -i "s/d.c.b.a/${V2RAY_SERVER}/g" /etc/v2ray/config.json
 sed -i "s/10011/${V2RAY_PORT}/g" /etc/v2ray/config.json
-sed -i "s/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/${V2RAY_ID}/g" /etc/v2ray/config.json
 sed -i "s/64/${V2RAY_ALTERID}/g" /etc/v2ray/config.json
+sed -i "s/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/${V2RAY_ID}/g" /etc/v2ray/config.json
 
 # Radius Client Config
 cat > /etc/radiusclient/radiusclient.conf <<_EOF_
@@ -88,6 +89,9 @@ _EOF_
 iptables -A FORWARD -p tcp --tcp-flags SYN,RST SYN -j TCPMSS --clamp-mss-to-pmtu
 # 伪装 VPN 子网流量
 iptables -t nat -A POSTROUTING -s ${VPN_NETWORK}/${VPN_NETMASK} -j MASQUERADE
+
+# 修改 PAC
+sed -i "s/my_pac_url/${PAC_URL}/g" /etc/ocserv/ocserv.conf
 
 # Run ACRay Server
 exec nohup /usr/bin/v2ray -config=/etc/v2ray/config.json >/dev/null 2>%1 &

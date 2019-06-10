@@ -4,7 +4,7 @@
             "8.8.8.8",
             "localhost"
         ],
-        "clientIp": "118.24.188.231"
+        "clientIp": "w.x.y.z"
     },
     "inbound": {
         "port": 1080,
